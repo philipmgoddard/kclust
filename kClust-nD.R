@@ -6,14 +6,12 @@ restrictRange <- function(x) {
   return(x / max(x))
 }
 
-# this was the killer. if spits out as data frame,
-# the loop finding the group based on closest centroid fails
 initCentroid <- function(nCent, df) {
   return(lapply(seq(nCent), function(x) as.numeric(df[sample(nrow(df), 1), ])))
 }
 
 euclDist <- function(x, y) {
-  return(sqrt(sum(x - y)^2))
+  return(sqrt(sum(x - y) ^ 2))
 }
 
 COM <- function(x) {
@@ -49,9 +47,7 @@ kMeans <- function(df, nCentroids = ncol(df), verboseIter = FALSE) {
 
     # check for convergence
     conv <- sum(abs(unlist(Map(function(x, y) x - y, centroids, oldCentroids))))
-    if (conv < 1e-6) {
-      break
-    }
+    if (conv < 1e-6) break
   }
 
   # scale back centroids
