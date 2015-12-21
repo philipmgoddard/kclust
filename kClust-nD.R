@@ -28,13 +28,12 @@ kMeans <- function(df, nCentroids = ncol(df), verboseIter = FALSE) {
   centroids <- initCentroid(nCentroids, scaleInput)
   scaleInput$grp <- NA
   inputMat <- data.matrix(scaleInput)
- # if allowPar() # detect cores and allocate
-  
+
   count <- 0
   repeat {
     count <- count + 1
     if (verboseIter) cat(paste0("iteration ", count, sep = ""), "\n")
-    
+
     # assign each point to a group based on closest centroid
     inputMat[, nDim + 1] <- apply(inputMat[, 1:nDim], 1, function(x) {
       tmp <- lapply(seq(nCentroids), function(y) euclDist(x, centroids[[y]]))
@@ -47,19 +46,19 @@ kMeans <- function(df, nCentroids = ncol(df), verboseIter = FALSE) {
       tmp <- inputMat[inputMat[, ncol(inputMat)] == x, 1:(ncol(inputMat) - 1)]
       apply(tmp, 2, COM)
     })
-    
+
     # check for convergence
     conv <- sum(abs(unlist(Map(function(x, y) x - y, centroids, oldCentroids))))
     if (conv < 1e-6) {
       break
     }
   }
-  
+
   # scale back centroids
   centroids <- lapply(centroids, function(x) {
     unlist(lapply(seq(nDim), function(y) x[[y]] * max(df[, y])))
   })
-  
+
   # prepare and return output
   df$grp <- inputMat[, ncol(inputMat)]
   out <- list(data = df,
@@ -69,16 +68,18 @@ kMeans <- function(df, nCentroids = ncol(df), verboseIter = FALSE) {
 }
 
 #################################################
+#################################################
 # test
 library(ggplot2)
 library(gtable)
 library(gridExtra)
 data(iris)
 
-# cluster based on petal length and petal width
+# cluster based on petal length and petal width (can do more if like!)
 clust <- kMeans(iris[, 3:4], 3)
 
-plot1 <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width)) + 
+# note that you probably wont have my color scheme loaded
+plot1 <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width)) +
   geom_point(aes(color = Species), size = 3, alpha = 0.6) +
   theme_bw() +
   scale_color_manual(values = philTheme()) +
@@ -96,11 +97,13 @@ gB <- ggplotGrob(plot2)
 grid.newpage()
 grid.draw(rbind(gA, gB, size = "first"))
 
-# scale up
-samples <- sample(nrow(iris), 10000, replace = TRUE)
+# scale up - sample with replacement and add a bit of noise
+samples <- sample(nrow(iris), 100000, replace = TRUE)
 data2 <- iris[samples, ]
 set.seed(1234)
-data2[, 1:4] <- lapply(data2[, 1:4], function(x) x + abs(rnorm(n = 10000, mean = 0, sd = 0.1)))
+data2[, 1:4] <- lapply(data2[, 1:4], function(x) {
+  x + rnorm(n = 10000, mean = 0, sd = 0.1))
+}
 
 # does the job. screams out to be written in compiled language though...
 clust2 <- kMeans(data2[, 3:4], 3, verboseIter = TRUE)
