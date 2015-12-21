@@ -18,7 +18,7 @@ COM <- function(x) {
   return(sum(x) / length(x))
 }
 
-kMeans <- function(df, nCentroids = ncol(df), verboseIter = FALSE) {
+kMeans <- function(df, nCentroids = 1, verboseIter = FALSE) {
   # process input
   nDim <- ncol(df)
   scaleInput <- df
@@ -50,7 +50,7 @@ kMeans <- function(df, nCentroids = ncol(df), verboseIter = FALSE) {
     if (conv < 1e-6) break
   }
 
-  # scale back centroids
+  # scale back centroids to origional scale
   centroids <- lapply(centroids, function(x) {
     unlist(lapply(seq(nDim), function(y) x[[y]] * max(df[, y])))
   })
