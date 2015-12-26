@@ -98,8 +98,8 @@ samples <- sample(nrow(iris), 100000, replace = TRUE)
 data2 <- iris[samples, ]
 set.seed(1234)
 data2[, 1:4] <- lapply(data2[, 1:4], function(x) {
-  x + rnorm(n = 10000, mean = 0, sd = 0.1))
-}
+  x + rnorm(n = 10000, mean = 0, sd = 0.1)
+})
 
 # does the job. screams out to be written in compiled language though...
 clust2 <- kMeans(data2[, 3:4], 3, verboseIter = TRUE)
