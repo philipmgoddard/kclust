@@ -98,14 +98,14 @@ samples <- sample(nrow(iris), 100000, replace = TRUE)
 data2 <- iris[samples, ]
 set.seed(1234)
 data2[, 1:4] <- lapply(data2[, 1:4], function(x) {
-  x + rnorm(n = 10000, mean = 0, sd = 0.1)
+  x + rnorm(n = 100000, mean = 0, sd = 0.1)
 })
 
 # does the job. screams out to be written in compiled language though...
 clust2 <- kMeans(data2[, 3:4], 3, verboseIter = TRUE)
 
 plot3 <- ggplot(clust2$data, aes(x = Petal.Length, y = Petal.Width)) +
-  geom_point(aes(color = factor(grp)), alpha = 0.6) +
+  geom_point(aes(color = factor(grp)), alpha = 0.2) +
   theme_bw() +
   scale_color_manual(values = philTheme(), name = "Group") +
   theme(legend.position = c(0.1, 0.8))
