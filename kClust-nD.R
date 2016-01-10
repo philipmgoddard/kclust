@@ -2,23 +2,28 @@
 # with arbitrary integer (>0) number of clusters
 # assumes positive space only
 
+# restrict reange -1 to 1
 restrictRange <- function(x) {
   return(x / max(abs(x)))
 }
 
+# initialise centroids at random existing points
 initCentroid <- function(nCent, df) {
   return(lapply(seq(nCent),
                 function(x) as.numeric(df[sample(nrow(df), 1), ])))
 }
 
+# calculate euclidean distance
 euclDist <- function(x, y) {
   return(sqrt(sum(x - y) ^ 2))
 }
 
+# calculate center of mass
 COM <- function(x) {
   return(sum(x) / length(x))
 }
 
+# kMeans clustering
 kMeans <- function(df, nCentroids = 1, verboseIter = FALSE) {
   # process input
   nDim <- ncol(df)
