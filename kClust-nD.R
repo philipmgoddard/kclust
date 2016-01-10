@@ -2,8 +2,8 @@
 # with arbitrary integer (>0) number of clusters
 # assumes positive space only
 
-restrictRange <- function(x) {
-  return(x / max(x))
+centerScale <- function(x) {
+  return((x - mean(x)) / sd(x))
 }
 
 initCentroid <- function(nCent, df) {
@@ -22,7 +22,7 @@ kMeans <- function(df, nCentroids = 1, verboseIter = FALSE) {
   # process input
   nDim <- ncol(df)
   scaleInput <- df
-  scaleInput[] <- lapply(scaleInput, restrictRange)
+  scaleInput[] <- lapply(scaleInput, centerScale)
   centroids <- initCentroid(nCentroids, scaleInput)
   scaleInput$grp <- NA
   inputMat <- data.matrix(scaleInput)
