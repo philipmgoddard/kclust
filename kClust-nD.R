@@ -2,12 +2,13 @@
 # with arbitrary integer (>0) number of clusters
 # assumes positive space only
 
-centerScale <- function(x) {
-  return((x - mean(x)) / sd(x))
+restrictRange <- function(x) {
+  return(x / max(abs(x)))
 }
 
 initCentroid <- function(nCent, df) {
-  return(lapply(seq(nCent), function(x) as.numeric(df[sample(nrow(df), 1), ])))
+  return(lapply(seq(nCent),
+                function(x) as.numeric(df[sample(nrow(df), 1), ])))
 }
 
 euclDist <- function(x, y) {
@@ -22,7 +23,7 @@ kMeans <- function(df, nCentroids = 1, verboseIter = FALSE) {
   # process input
   nDim <- ncol(df)
   scaleInput <- df
-  scaleInput[] <- lapply(scaleInput, centerScale)
+  scaleInput[] <- lapply(scaleInput, restrictRange)
   centroids <- initCentroid(nCentroids, scaleInput)
   scaleInput$grp <- NA
   inputMat <- data.matrix(scaleInput)
@@ -52,7 +53,7 @@ kMeans <- function(df, nCentroids = 1, verboseIter = FALSE) {
 
   # scale back centroids to origional scale
   centroids <- lapply(centroids, function(x) {
-    unlist(lapply(seq(nDim), function(y) x[[y]] * max(df[, y])))
+    unlist(lapply(seq(nDim), function(y) x[[y]] * max(abs(df[, y]))))
   })
 
   # prepare and return output
@@ -75,6 +76,7 @@ data(iris)
 clust <- kMeans(iris[, 3:4], 3)
 
 # note that you probably wont have my color scheme loaded
+# choose something other than philTheme()
 plot1 <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width)) +
   geom_point(aes(color = Species), size = 3, alpha = 0.6) +
   theme_bw() +
